@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TCritiquerecordInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TCritiquerecordInfoEntity" id="tCritiquerecordInfoMap">
+        <result property="pkId" column="pk_id"/>
+        <result property="blogId" column="blog_id"/>
+        <result property="visitIp" column="visit_ip"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+    
+    <sql id="query_Critique">
+    <if test="blogId!=null and blogId!=''">
+and blog_id=#{blogId} 
+</if>
+<if test="visitIp!=null and visitIp!=''">
+and visit_ip=#{visitIp} 
+</if>
+</sql>
+    
+    <select id="queryObject" resultMap="tCritiquerecordInfoMap">
+		select * from t_critiquerecord_info 
+		<where>
+<include refid="query_Critique"></include>
+</where>
+	</select>
+
+<insert id="save" parameterType="com.front.entity.TCritiquerecordInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_critiquerecord_info
+		(
+			`blog_id`, 
+			`visit_ip`, 
+			`gmt_create`, 
+			`gmt_modified`
+		)
+		values
+		(
+			#{blogId}, 
+			#{visitIp}, 
+			#{gmtCreate}, 
+			#{gmtModified}
+		)
+	</insert>
+	
+	<delete id="delete">
+		delete from t_critiquerecord_info 
+		<where>
+<include refid="query_Critique"></include>
+</where>
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_critiquerecord_info where pk_id in 
+		<foreach item="pkId" collection="array" open="(" separator="," close=")">
+			#{pkId}
+		</foreach>
+	</delete>
+	
+</mapper>

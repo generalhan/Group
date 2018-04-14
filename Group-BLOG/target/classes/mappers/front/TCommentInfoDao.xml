@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TCommentInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TCommentInfoEntity" id="tCommentInfoMap">
+        <result property="pkId" column="pk_id"/>
+        <result property="blogComment" column="blog_comment"/>
+        <result property="fkUid" column="fk_uid"/>
+        <result property="fkBlogId" column="fk_blog_id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="userName" column="user_name"/>
+        <result property="imgUrl" column="img_url"/> 
+    </resultMap>
+   
+    <sql id="query_comment">
+    <if test="fkBlogId!=null and fkBlogId!=''">
+and fk_blog_id=#{fkBlogId} 
+</if>
+</sql> 
+
+ <sql id="query_delete">
+    <if test="fkBlogId!=null and fkBlogId!=''">
+and fk_blog_id=#{fkBlogId} 
+</if>
+ <if test="pkId!=null and pkId!=''">
+and pk_id=#{pkId} 
+</if>
+</sql> 
+    
+    <select id="queryList" parameterType="Map" resultMap="tCommentInfoMap">
+		select * from t_comment_info
+		<where>
+<include refid="query_comment"></include>
+</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by gmt_create asc
+			</otherwise>
+        </choose>
+		<if test="beginIndex!=null and everyPage!=null">
+limit #{beginIndex},#{everyPage}
+</if>
+	</select>
+	
+ 	<select id="queryTotal" parameterType="Map" resultType="Long">
+		select count(*) from t_comment_info 
+		<where>
+<include refid="query_comment"></include>
+</where>
+	</select>
+
+<insert id="save" parameterType="com.front.entity.TCommentInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_comment_info
+		(
+			`blog_comment`, 
+			`fk_uid`, 
+			`fk_blog_id`, 
+			`gmt_create`, 
+			`gmt_modified`,
+			`img_url`,
+			`user_name`
+		)
+		values
+		(
+			#{blogComment}, 
+			#{fkUid}, 
+			#{fkBlogId}, 
+			#{gmtCreate}, 
+			#{gmtModified},
+			#{imgUrl},
+			#{userName}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.front.entity.TCommentInfoEntity">
+		update t_comment_info 
+		<set>
+			<if test="blogComment != null">`blog_comment` = #{blogComment}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="fkBlogId != null">`fk_blog_id` = #{fkBlogId}, </if>
+			<if test="gmtCreate != null">`gmt_create` = #{gmtCreate}, </if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified}</if>
+		</set>
+		where pk_id = #{pkId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_comment_info
+			<where>
+<include refid="query_delete"></include>
+</where>
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_comment_info where pk_id in 
+		<foreach item="pkId" collection="array" open="(" separator="," close=")">
+			#{pkId}
+		</foreach>
+	</delete>
+	
+	
+</mapper>

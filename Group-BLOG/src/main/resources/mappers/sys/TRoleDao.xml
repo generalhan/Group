@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sys.dao.TRoleDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.sys.entity.TRoleEntity" id="tRoleMap">
+        <result property="pkId" column="pk_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleDescription" column="role_description"/>
+        <result property="roleAvailable" column="role_available"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+
+	<select id="findRoles" parameterType="String" resultMap="tRoleMap">
+ SELECT
+            tr.`pk_id`,
+            tr.`role_description`,
+            tr.`role_name`
+            FROM `t_role` tr
+            LEFT JOIN `t_user_role` tur ON tr.`pk_id` = tur.role_id
+            LEFT JOIN `t_user` tu ON tur.`user_id` = tu.pk_id
+        WHERE tu.`user_name` = #{userName}
+</select>
+
+
+<update id="updateRolesOfUser" parameterType="Map">
+      update t_user_role
+        <set>
+            <if test="role_id != null">
+                role_id = #{role_id},
+            </if>
+        </set>
+        WHERE user_id = #{pkId}
+</update>
+
+</mapper>

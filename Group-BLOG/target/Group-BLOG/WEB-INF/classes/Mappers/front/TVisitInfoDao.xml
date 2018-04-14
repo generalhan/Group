@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TVisitInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TVisitInfoEntity" id="tVisitInfoMap">
+         <result property="ipAddress" column="ip_address"/>
+        <result property="pkId" column="pk_id"/>
+        <result property="visitorIp" column="visitor_ip"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="requestUrl" column="request_url"/>
+        <result property="requestType" column="request_type"/>
+        <result property="userName" column="user_name"/>
+        <result property="loggerName" column="logger_name"/>
+        <result property="loggerType" column="logger_type"/>
+        <result property="requestTime" column="request_time"/>
+    </resultMap>
+    
+    <sql id="query_visit">
+
+</sql> 
+    
+    <select id="queryList" resultMap="tVisitInfoMap">
+		select * from t_visit_info
+		<where>
+<include refid="query_visit"></include>
+</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by pk_id desc
+			</otherwise>
+        </choose>
+		<if test="beginIndex!=null and everyPage!=null">
+limit #{beginIndex},#{everyPage}
+</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="Long">
+		select count(*) from t_visit_info 
+		<where>
+<include refid="query_visit"></include>
+</where>
+	</select>
+
+<insert id="save" parameterType="com.front.entity.TVisitInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_visit_info
+		(
+			`ip_address`, 
+			`visitor_ip`, 
+			`gmt_create`, 
+			`gmt_modified`, 
+			`request_url`, 
+			`request_type`, 
+			`user_name`, 
+			`logger_name`, 
+			`logger_type`, 
+			`request_time`
+		)
+		values
+		(
+			#{ipAddress}, 
+			#{visitorIp}, 
+			#{gmtCreate}, 
+			#{gmtModified}, 
+			#{requestUrl}, 
+			#{requestType}, 
+			#{userName}, 
+			#{loggerName}, 
+			#{loggerType}, 
+			#{requestTime}
+		)
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		delete from t_visit_info where pk_id = #{pkId}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_visit_info where pk_id in 
+		<foreach item="pkId" collection="list" open="(" separator="," close=")">
+			#{pkId}
+		</foreach>
+	</delete>
+	
+</mapper>

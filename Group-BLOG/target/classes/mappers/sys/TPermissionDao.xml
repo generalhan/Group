@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sys.dao.TPermissionDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.sys.entity.TPermissionEntity" id="tPermissionMap">
+        <result property="pkId" column="pk_id"/>
+        <result property="permissionName" column="permission_name"/>
+        <result property="permissionDescription" column="permission_description"/>
+        <result property="permissionAvailable" column="permission_available"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+
+	
+
+</mapper>

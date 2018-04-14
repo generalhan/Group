@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TBlogInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TBlogInfoEntity" id="tBlogInfoMap">
+        <id property="Id" column="id"/>
+        <result property="blogTitle" column="blog_title"/>
+        <result property="blogContent" column="blog_content"/>
+        <result property="visitIp" column="visit_ip"/>
+        <result property="visitorHasread" column="visitor_hasread"/>
+        <result property="blogState" column="blog_state"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="blogLable" column="blog_lable"/>
+        <result property="fkUid" column="fk_uid"/>
+        <result property="userName" column="user_name"/>    
+        <result property="item" column="item"/> 
+        <result property="imgUrl" column="img_url"/>     
+    </resultMap>
+    
+     <sql id="query_blog">
+    <if test="fkUid!=null and fkUid!=''">
+and fk_uid=#{fkUid} 
+</if>
+<if test="pkId!=null and pkId!=''">
+and id=#{pkId} 
+</if>
+<if test="item!=null and item!=''">
+and item=#{item} 
+</if>
+</sql>
+    
+    <select id="queryAllList" parameterType="Map" resultMap="tBlogInfoMap">
+		  select  *
+         from t_blog_info 
+         <where>
+<include refid="query_blog"></include>
+</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="beginIndex!=null and everyPage!=null">
+limit #{beginIndex},#{everyPage}
+</if>
+	</select>
+	
+	<select parameterType="Map" id="queryTotal" resultType="Long">
+		select count(*) from t_blog_info 
+		 <where>
+<include refid="query_blog"></include>
+</where>
+	</select>
+	
+	<select id="getListByStatus" resultMap="tBlogInfoMap">
+		select * from t_blog_info 
+		where blog_state in
+		<foreach  item="item" collection="list" index="index"  open="(" separator="," close=")">#{item}</foreach>
+		order by gmt_create desc
+	</select>
+
+	<insert id="save" parameterType="com.front.entity.TBlogInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_blog_info
+		(
+			`blog_title`, 
+			`blog_content`, 
+			`visit_ip`, 
+			`fk_uid`, 
+			`visitor_hasread`, 
+			`blog_state`, 
+			`gmt_create`, 
+			`gmt_modified`, 
+			`blog_lable`,
+			`item`,
+			`img_url`,
+			`user_name`
+		)
+		values
+		(
+			#{blogTitle}, 
+			#{blogContent}, 
+			#{visitIp}, 
+			#{fkUid}, 
+			#{visitorHasread}, 
+			#{blogState}, 
+			#{gmtCreate}, 
+			#{gmtModified}, 
+			#{blogLable},
+			#{item},
+			#{imgUrl},
+			#{userName}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.front.entity.TBlogInfoEntity">
+		update t_blog_info 
+		<set>
+			<if test="blogTitle != null">`blog_title` = #{blogTitle}, </if>
+			<if test="blogLable != null">`blog_Lable` = #{blogLable}, </if>
+			<if test="blogContent != null">`blog_content` = #{blogContent}, </if>
+			<if test="visitIp != null">`visit_ip` = #{visitIp}, </if>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="visitorHasread != null">`visitor_hasread` = #{visitorHasread}, </if>
+			<if test="blogState != null">`blog_state` = #{blogState}, </if>
+			<if test="gmtCreate != null">`gmt_create` = #{gmtCreate}, </if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified}</if>
+		</set>
+		where id = #{pkId}
+	</update>
+	
+	<delete id="delete">
+		delete from t_blog_info where id = #{pkId}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_blog_info where id in 
+		<foreach item="pkId" collection="array" open="(" separator="," close=")">
+			#{pkId}
+		</foreach>
+	</delete>
+
+</mapper>

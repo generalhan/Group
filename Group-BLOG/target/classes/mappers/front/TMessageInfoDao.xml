@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TMessageInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TMessageInfoEntity" id="tMessageInfoMap">
+        <id property="pkId" column="pk_id"/>
+        <result property="visitorIp" column="visitor_ip"/>
+        <result property="messageContent" column="message_content"/>
+        <result property="messageState" column="message_state"/>
+        <result property="parentNode" column="parent_node"/>
+        <result property="currentNode" column="current_node"/>
+        <result property="replyNode" column="reply_node"/>
+        <result property="messagePraise" column="message_praise"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+    </resultMap>
+
+	<insert id="save" parameterType="com.front.entity.TMessageInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_message_info
+		(
+			`visitor_ip`, 
+			`message_content`, 
+			`message_state`, 
+			`parent_node`, 
+			`current_node`, 
+			`reply_node`, 
+			`message_praise`, 
+			`gmt_create`, 
+			`gmt_modified`
+		)
+		values
+		(
+			#{visitorIp}, 
+			#{messageContent}, 
+			#{messageState}, 
+			#{parentNode}, 
+			#{currentNode}, 
+			#{replyNode}, 
+			#{messagePraise}, 
+			#{gmtCreate}, 
+			#{gmtModified}
+		)
+	</insert>
+	
+	<select id="queryAllParentNodeMessage" resultMap="tMessageInfoMap">
+SELECT * 
+FROM t_message_info
+WHERE parent_node=0
+ORDER BY gmt_create DESC
+</select>
+
+<select id="queryNotAllOfParentNodeMessage" resultMap="tMessageInfoMap">
+SELECT * 
+FROM t_message_info
+WHERE parent_node>0 
+ORDER BY gmt_create DESC
+</select>
+
+</mapper>

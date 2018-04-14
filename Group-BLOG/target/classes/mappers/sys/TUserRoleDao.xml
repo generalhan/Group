@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sys.dao.TUserRoleDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.sys.entity.TUserRoleEntity" id="tUserRoleMap">
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
+
+
+	<insert id="save" parameterType="com.sys.entity.TUserRoleEntity">
+		insert into t_user_role
+		(
+			`user_id`, 
+			`role_id`
+		)
+		values
+		(
+			#{userId}, 
+			#{roleId}
+		)
+	</insert>
+	
+</mapper>

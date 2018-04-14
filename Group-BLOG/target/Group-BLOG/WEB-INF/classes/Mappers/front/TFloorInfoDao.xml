@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.front.dao.TFloorInfoDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.front.entity.TFloorInfoEntity" id="tFloorInfoMap">
+        <id property="pkId" column="pk_id"/>
+        <result property="blogId" column="blog_id"/>
+        <result property="commentId" column="comment_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="floorComment" column="floor_comment"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+         <result property="userName" column="user_name"/>
+        <result property="replyedName" column="replyed_name"/>
+        <result property="imgUrl" column="img_url"/> 
+    </resultMap>
+
+<sql id="query_floor">
+   <if test="blogId!=null and blogId!=''">
+and blog_id=#{blogId} 
+</if>
+<if test="commentId!=null and commentId!=''">
+and comment_id=#{commentId} 
+</if>
+ <if test="pkId!=null and pkId!=''">
+and pk_id=#{pkId} 
+</if>
+</sql> 
+
+
+
+ <select id="queryList" parameterType="Map" resultMap="tFloorInfoMap">
+		select * from t_floor_info
+		<where>
+<include refid="query_floor"></include>
+</where>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by gmt_create asc
+			</otherwise>
+        </choose>
+		<if test="beginIndex!=null and everyPage!=null">
+limit #{beginIndex},#{everyPage}
+</if>
+	</select>
+	
+ 	<select id="queryTotal" parameterType="Map" resultType="Long">
+		select count(*) from t_floor_info 
+		<where>
+<include refid="query_floor"></include>
+</where>
+	</select>
+
+	<insert id="save" parameterType="com.front.entity.TFloorInfoEntity" useGeneratedKeys="true" keyProperty="pkId">
+		insert into t_floor_info
+		(
+			`blog_id`, 
+			`comment_id`, 
+			`user_id`, 
+			`floor_comment`, 
+			`gmt_create`, 
+			`gmt_modified`,
+			`user_name`, 
+			`img_url`,
+			`replyed_name`
+		)
+		values
+		(
+			#{blogId}, 
+			#{commentId}, 
+			#{userId}, 
+			#{floorComment}, 
+			#{gmtCreate}, 
+			#{gmtModified},
+			#{userName}, 
+			#{imgUrl},
+			#{replyedName}
+		)
+	</insert>
+	
+		<delete id="delete">
+		delete from t_floor_info
+			<where>
+<include refid="query_floor"></include>
+</where>
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_floor_info where pk_id in 
+		<foreach item="pkId" collection="array" open="(" separator="," close=")">
+			#{pkId}
+		</foreach>
+	</delete>
+	
+</mapper>
